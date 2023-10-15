@@ -14,17 +14,17 @@ nicknames = []
 
 print("Server has started...")
 
-def clientthread(conn, addr):
+def clientthread(conn, nickname):
     conn.send("Welcome to this chatroom!".encode('utf-8'))
     while True:
         try:
             message = conn.recv(2048).decode('utf-8')
             if message:
-                print ( message)
-                broadcast( message , conn)
+                print(message)
+                broadcast(message, conn)
             else:
                 remove(conn)
-                removeNicknames(nickname)
+                remove_nickname(nickname)
         except:
             continue
 
@@ -40,18 +40,18 @@ def remove(connection):
     if connection in list_of_clients:
         list_of_clients.remove(connection)
 
-def removeNicknames(name):
-    if name in nicknames:
-        nicknames.remove(name)
+def remove_nickname(nickname):
+    if nickname in nicknames:
+        nicknames.remove(nickname)
 
 while True:
     conn, addr = server.accept()
-    conn.send('NICKNIAME'.encode('utf-8'))
+    conn.send('NICKNAME'.encode('utf-8'))
     nickname = conn.recv(2048).decode('utf-8')
-    nicknames.append(nickname)
     list_of_clients.append(conn)
-    message = f'{nickname} joined....'
+    nicknames.append(nickname)
+    message = "{} joined!".format(nickname)
     print(message)
     broadcast(message, conn)
-    new_thread = Thread(target= clientthread,args=(conn,addr))
+    new_thread = Thread(target= clientthread,args=(conn, nickname))
     new_thread.start()
